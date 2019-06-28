@@ -1,8 +1,14 @@
+/*
+ * Copyright 2019 Yeolar
+ */
+
 #pragma once
 
 #include <wangle/channel/Handler.h>
 
 #include "Message.pb.h"
+
+namespace cdata {
 
 class ClientSerializeHandler : public wangle::Handler<
   std::unique_ptr<folly::IOBuf>, Result,
@@ -20,3 +26,5 @@ class ClientSerializeHandler : public wangle::Handler<
     return ctx->fireWrite(folly::IOBuf::copyBuffer(out));
   }
 };
+
+} // namespace cdata

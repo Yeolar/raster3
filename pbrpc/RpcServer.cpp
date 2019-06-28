@@ -1,3 +1,7 @@
+/*
+ * Copyright 2019 Yeolar
+ */
+
 #include <gflags/gflags.h>
 
 #include <folly/init/Init.h>
@@ -15,6 +19,7 @@
 
 using namespace folly;
 using namespace wangle;
+using namespace cdata;
 
 using SerializePipeline = wangle::Pipeline<IOBufQueue&, Result>;
 

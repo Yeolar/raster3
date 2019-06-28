@@ -1,4 +1,8 @@
+// Copyright 2019 Yeolar
+
 syntax = "proto3";
+
+package cdata;
 
 message Query {
   string traceid = 1;

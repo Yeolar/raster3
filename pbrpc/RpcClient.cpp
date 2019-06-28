@@ -1,3 +1,7 @@
+/*
+ * Copyright 2019 Yeolar
+ */
+
 #include <gflags/gflags.h>
 
 #include <boost/uuid/uuid_generators.hpp>
@@ -16,6 +20,7 @@
 
 using namespace folly;
 using namespace wangle;
+using namespace cdata;
 
 using SerializePipeline = wangle::Pipeline<IOBufQueue&, Query>;
 
