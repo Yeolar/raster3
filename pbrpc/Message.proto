@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+message Query {
+  string traceid = 1;
+  string query = 2;
+}
+
+enum ResultCode {
+  OK = 0;
+
+  // WARNING      <1000
+
+  // ERROR        >1000
+  E_SOURCE__UNTRUSTED = 1001;
+  E_BACKEND_FAILURE = 1002;
+}
+
+message Result {
+  string traceid = 1;
+  ResultCode code = 2;
+  string result = 3;
+}
+
