@@ -20,6 +20,9 @@
 *.mod
 *.smod
 
+# Python compiled files
+*.py[cod]
+
 # Compiled Static libraries
 *.lai
 *.la
@@ -31,7 +34,8 @@
 *.out
 *.app
 
-/build
-pbrpc-config.h
+/build/
+/deps/
+/raster3/raster-config.h
 Message.pb.h
 Message.pb.cc

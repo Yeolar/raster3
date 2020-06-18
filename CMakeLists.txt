@@ -1,11 +1,12 @@
 # Copyright (C) 2019, Yeolar
 
 # Define project
-project(pbrpc)
+project(raster3)
 
 cmake_minimum_required(VERSION 3.2)
 
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake-scripts)
+set(CMAKE_PREFIX_PATH ${PROJECT_SOURCE_DIR}/deps/usr/local)
 
 # Set project version
 set(VERSION_MAJOR 1)
@@ -15,7 +16,15 @@ set(VERSION_PATCH 0)
 # Required packages
 set(CMAKE_THREAD_PREFER_PTHREAD TRUE)
 find_package(Threads REQUIRED)
-find_package(Boost REQUIRED COMPONENTS regex)
+find_package(Boost REQUIRED COMPONENTS
+    chrono
+    context
+    date_time
+    filesystem
+    program_options
+    regex
+    system
+    thread)
 find_package(GFlags REQUIRED)
 find_package(Glog REQUIRED)
 find_package(Folly REQUIRED)
@@ -60,7 +69,7 @@ check_cxx_source_compiles("
         int ret = strerror_r(ENOMEM, buf, sizeof(buf));
         return ret;
     }"
-    CDATA_HAVE_XSI_STRERROR_R)
+    R3_HAVE_XSI_STRERROR_R)
 
 if(GFLAGS_FOUND)
     set(CMAKE_REQUIRED_LIBRARIES "gflags")
@@ -69,26 +78,26 @@ if(GFLAGS_FOUND)
         #include <gflags/gflags.h>
         void foo() { google::GetArgv(); }
         int main() { return 0; }"
-        CDATA_UNUSUAL_GFLAGS_NAMESPACE)
+        R3_UNUSUAL_GFLAGS_NAMESPACE)
 
-    if(CDATA_UNUSUAL_GFLAGS_NAMESPACE)
-        set(CDATA_GFLAGS_NAMESPACE "google")
+    if(R3_UNUSUAL_GFLAGS_NAMESPACE)
+        set(R3_GFLAGS_NAMESPACE "google")
     else()
-        set(CDATA_GFLAGS_NAMESPACE "gflags")
+        set(R3_GFLAGS_NAMESPACE "gflags")
     endif()
 endif()
 
 configure_file(
-    ${PROJECT_SOURCE_DIR}/pbrpc/pbrpc-config.h.in
-    ${PROJECT_SOURCE_DIR}/pbrpc/pbrpc-config.h
+    ${PROJECT_SOURCE_DIR}/raster3/raster-config.h.in
+    ${PROJECT_SOURCE_DIR}/raster3/raster-config.h
 )
 
 # Binary
-add_subdirectory(pbrpc)
+add_subdirectory(raster3)
 
 # Test
 if(GTEST_FOUND)
     enable_testing()
-#    add_subdirectory(pbrpc/test)
+#    add_subdirectory(raster3/test)
 endif()
 
