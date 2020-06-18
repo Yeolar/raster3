@@ -6,7 +6,6 @@ project(raster3)
 cmake_minimum_required(VERSION 3.2)
 
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake-scripts)
-set(CMAKE_PREFIX_PATH ${PROJECT_SOURCE_DIR}/deps/usr/local)
 
 # Set project version
 set(VERSION_MAJOR 1)
