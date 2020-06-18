@@ -14,6 +14,7 @@ set(VERSION_PATCH 0)
 
 # Required packages
 set(CMAKE_THREAD_PREFER_PTHREAD TRUE)
+set(Boost_USE_MULTITHREADED TRUE)
 find_package(Threads REQUIRED)
 find_package(Boost REQUIRED COMPONENTS
     chrono
@@ -34,7 +35,8 @@ find_package(Protobuf REQUIRED)
 find_package(GTest)
 
 # Setup environment
-set(CMAKE_BUILD_TYPE Release)   # Debug: -g; Release: -O3 -DNDEBUG
+set(CMAKE_BUILD_TYPE RelWithDebInfo)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=native")
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address")    # memcheck
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
