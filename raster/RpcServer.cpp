@@ -19,7 +19,7 @@
 
 using namespace folly;
 using namespace wangle;
-using namespace cdata;
+using namespace raster;
 
 using SerializePipeline = wangle::Pipeline<IOBufQueue&, Result>;
 

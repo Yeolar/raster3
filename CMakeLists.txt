@@ -57,47 +57,17 @@ include_directories(
     ${PROJECT_SOURCE_DIR}
 )
 
-# Check and setup configurations
-include(CheckCXXSourceCompiles REQUIRED)
-
-check_cxx_source_compiles("
-    #include <string.h>
-    #include <errno.h>
-    int main() {
-        char buf[1024];
-        buf[0] = 0;
-        int ret = strerror_r(ENOMEM, buf, sizeof(buf));
-        return ret;
-    }"
-    R3_HAVE_XSI_STRERROR_R)
-
-if(GFLAGS_FOUND)
-    set(CMAKE_REQUIRED_LIBRARIES "gflags")
-
-    check_cxx_source_compiles("
-        #include <gflags/gflags.h>
-        void foo() { google::GetArgv(); }
-        int main() { return 0; }"
-        R3_UNUSUAL_GFLAGS_NAMESPACE)
-
-    if(R3_UNUSUAL_GFLAGS_NAMESPACE)
-        set(R3_GFLAGS_NAMESPACE "google")
-    else()
-        set(R3_GFLAGS_NAMESPACE "gflags")
-    endif()
-endif()
-
 configure_file(
-    ${PROJECT_SOURCE_DIR}/raster3/raster-config.h.in
-    ${PROJECT_SOURCE_DIR}/raster3/raster-config.h
+    ${PROJECT_SOURCE_DIR}/raster/raster-config.h.in
+    ${PROJECT_SOURCE_DIR}/raster/raster-config.h
 )
 
 # Binary
-add_subdirectory(raster3)
+add_subdirectory(raster)
 
 # Test
 if(GTEST_FOUND)
     enable_testing()
-#    add_subdirectory(raster3/test)
+#    add_subdirectory(raster/test)
 endif()
 

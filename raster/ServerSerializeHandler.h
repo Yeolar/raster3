@@ -8,7 +8,7 @@
 
 #include "Message.pb.h"
 
-namespace cdata {
+namespace raster {
 
 class ServerSerializeHandler : public wangle::Handler<
   std::unique_ptr<folly::IOBuf>, Query,
@@ -27,4 +27,4 @@ class ServerSerializeHandler : public wangle::Handler<
   }
 };
 
-} // namespace cdata
+} // namespace raster

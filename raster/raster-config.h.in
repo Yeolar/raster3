@@ -1,0 +1,15 @@
+#pragma once
+
+/* meta */
+
+#define RASTER_PACKAGE "@PROJECT_NAME@"
+#define RASTER_VERSION "@VERSION_MAJOR@.@VERSION_MINOR@.@VERSION_PATCH@"
+
+/* compile tests for keyword, lib, function, ... */
+
+#cmakedefine RASTER_HAVE_XSI_STRERROR_R 1
+
+/* gflags */
+
+#cmakedefine RASTER_GFLAGS_NAMESPACE @RASTER_GFLAGS_NAMESPACE@
+#cmakedefine RASTER_UNUSUAL_GFLAGS_NAMESPACE 1

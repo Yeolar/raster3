@@ -2,7 +2,7 @@
 
 syntax = "proto3";
 
-package cdata;
+package raster;
 
 message Query {
   string traceid = 1;
