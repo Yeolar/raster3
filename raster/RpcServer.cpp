@@ -44,7 +44,7 @@ class RpcService : public wangle::Service<Query, Result> {
     Result response;
     response.set_traceid(request.traceid());
     response.set_code(ResultCode::OK);
-    response.set_result("result string");
+    response.set_result(0, "result string");
     return response;
   }
 };

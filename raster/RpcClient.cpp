@@ -129,7 +129,9 @@ int main(int argc, char** argv) {
     request.set_query("query string");
     service(request).then([request](raster::Result response) {
       CHECK(request.traceid() == response.traceid());
-      std::cout << response.result() << std::endl;
+      for (int i = 0; i < response.result_size(); i++) {
+        std::cout << response.result(i) << std::endl;
+      }
     });
   } catch (const std::exception& e) {
     std::cout << folly::exceptionStr(e) << std::endl;
