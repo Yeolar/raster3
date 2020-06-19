@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+#include <dlfcn.h>
+
 #include <gflags/gflags.h>
 
 #include <folly/executors/CPUThreadPoolExecutor.h>
@@ -27,11 +29,17 @@
 #include <wangle/service/ServerDispatcher.h>
 #include <wangle/service/Service.h>
 
+#include <accelerator/cson.h>
+#include <accelerator/FileUtil.h>
+#include <accelerator/Logging.h>
+
+#include "raster/Context.h"
 #include "raster/GraphScheduler.h"
 #include "raster/taskflow/executor.hpp"
 #include "ServerSerializeHandler.h"
 
 DEFINE_int32(port, 8080, "server port");
+DEFINE_string(conf, "conf/raster.cson", "server conf");
 
 namespace raster {
 
@@ -39,20 +47,65 @@ using SerializePipeline = wangle::Pipeline<folly::IOBufQueue&, Result>;
 
 class RpcService : public wangle::Service<Query, Result> {
  public:
+  RpcService() {
+    std::string conf;
+    acc::readFile(FLAGS_conf.c_str(), conf);
+    conf_ = acc::parseCson(conf);
+    initDynamic();
+    initTaskflow();
+  }
+
+  virtual ~RpcService() {
+    if (handle_) {
+      dlclose(handle_);
+    }
+  }
+
+  bool initDynamic() {
+    auto dyn = conf_.getDefault("dllib");
+    if (dyn.empty()) {
+      ACCLOG(ERROR) << "conf miss dllib: " << acc::toCson(conf_);
+      return false;
+    }
+    handle_ = dlopen(dyn.asString().c_str(), RTLD_LAZY);
+    if (handle_ == nullptr) {
+      ACCLOG(ERROR) << "dlopen '" << dyn << "' failed";
+      return false;
+    }
+    return true;
+  }
+
+  bool initTaskflow() {
+    return true;
+  }
+
   folly::Future<Result> operator()(Query request) override {
     Result response;
     response.set_traceid(request.traceid());
     response.set_code(ResultCode::OK);
 
+    auto sched = conf_.getDefault("scheduler");
+    if (sched.empty()) {
+      ACCLOG(ERROR) << "conf miss scheduler: " << acc::toCson(conf_);
+      response.set_code(ResultCode::E_SCHED__NOTFOUND);
+      return response;
+    }
+
     tf::Taskflow taskflow("raster-taskflow");
-    schedule(taskflow, request, response);
+    Context context;
+    context.conf = &conf_;
+    auto& schedule = ScheduleManager::getInstance()->get(sched.asString());
+    schedule(taskflow, request, response, context);
     executor_.run(taskflow).wait();
 
     return response;
   }
 
  private:
+  acc::dynamic conf_;
   tf::Executor executor_{10};
+  void* handle_;
+  std::map<std::string, tf::Taskflow> flows_;
 };
 
 class RpcPipelineFactory : public wangle::PipelineFactory<SerializePipeline> {

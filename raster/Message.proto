@@ -17,6 +17,7 @@ enum ResultCode {
   // ERROR        >1000
   E_SOURCE__UNTRUSTED = 1001;
   E_BACKEND_FAILURE = 1002;
+  E_SCHED__NOTFOUND = 1003;
 }
 
 message Result {

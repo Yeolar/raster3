@@ -1,0 +1,4 @@
+{
+  dllib=lib/raster_sampleapp.dynlib,
+  schedulder=raster
+}

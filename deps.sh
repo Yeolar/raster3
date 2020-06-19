@@ -2,6 +2,7 @@
 DEPS=(
 https://github.com/facebook/folly@v2018.08.06.00
 https://github.com/Yeolar/wangle@v2018.08.06.00.fix:"cmake ../wangle"
+https://github.com/Yeolar/accelerator@v2
 )
 
 mkdir -p _deps && cd _deps

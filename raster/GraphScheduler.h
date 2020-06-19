@@ -16,11 +16,44 @@
 
 #pragma once
 
+#include "raster/Context.h"
 #include "raster/Message.pb.h"
 #include "raster/taskflow/taskflow.hpp"
 
 namespace raster {
 
-void schedule(tf::Taskflow& taskflow, const Query& request, Result& response);
+typedef std::function<
+  void(tf::Taskflow& taskflow,
+       const Query& request,
+       Result& response,
+       Context& context)> ScheduleFn;
+
+class ScheduleManager {
+ public:
+  static ScheduleManager* getInstance() {
+    static ScheduleManager* sm = new ScheduleManager();
+    return sm;
+  }
+
+  const ScheduleFn& get(const std::string& name) const {
+    return map_.at(name);
+  }
+
+  void add(const std::string& name, ScheduleFn&& fn) {
+    map_.emplace(name, std::move(fn));
+  }
+
+ private:
+  ScheduleManager() = default;
+  ~ScheduleManager() = default;
+
+  std::map<std::string, ScheduleFn> map_;
+};
+
+struct ScheduleRegister {
+  ScheduleRegister(const char* name, ScheduleFn fn) {
+    ScheduleManager::getInstance()->add(name, std::move(fn));
+  }
+};
 
 } // namespace raster

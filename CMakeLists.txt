@@ -30,6 +30,7 @@ find_package(Glog REQUIRED)
 find_package(Folly REQUIRED)
 find_package(Wangle REQUIRED)
 find_package(Protobuf REQUIRED)
+find_package(Accelerator REQUIRED)
 
 # Optional packages
 find_package(GTest)
@@ -52,6 +53,7 @@ link_libraries(
     ${FOLLY_LIBRARIES}
     ${WANGLE_LIBRARIES}
     ${PROTOBUF_LIBRARIES}
+    ${ACCELERATOR_LIBRARY}
 )
 
 include_directories(

@@ -25,3 +25,4 @@ install(TARGETS raster_server
                 GROUP_READ GROUP_EXECUTE
                 WORLD_READ WORLD_EXECUTE
 )
+install(DIRECTORY conf DESTINATION conf)
