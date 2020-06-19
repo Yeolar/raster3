@@ -66,6 +66,7 @@ configure_file(
 # Binary
 add_subdirectory(raster)
 add_subdirectory(raster/service)
+add_subdirectory(raster/taskflow)
 
 # Test
 if(GTEST_FOUND)
