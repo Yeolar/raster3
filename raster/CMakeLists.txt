@@ -20,6 +20,7 @@ target_link_libraries(raster_client)
 add_executable(raster_server
     Message.pb.cc
     RpcServer.cpp
+    sampleapp/GraphScheduler.cpp
 )
 target_link_libraries(raster_server)
 

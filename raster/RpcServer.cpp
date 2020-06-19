@@ -27,7 +27,9 @@
 #include <wangle/service/ServerDispatcher.h>
 #include <wangle/service/Service.h>
 
+#include "GraphScheduler.h"
 #include "ServerSerializeHandler.h"
+#include "taskflow/executor.hpp"
 
 DEFINE_int32(port, 8080, "server port");
 
@@ -38,15 +40,19 @@ using SerializePipeline = wangle::Pipeline<folly::IOBufQueue&, Result>;
 class RpcService : public wangle::Service<Query, Result> {
  public:
   folly::Future<Result> operator()(Query request) override {
-    printf("Query: %s, %s\n",
-           request.traceid().c_str(), request.query().c_str());
-
     Result response;
     response.set_traceid(request.traceid());
     response.set_code(ResultCode::OK);
-    response.set_result(0, "result string");
+
+    tf::Taskflow taskflow("raster-taskflow");
+    schedule(taskflow, request, response);
+    executor_.run(taskflow).wait();
+
     return response;
   }
+
+ private:
+  tf::Executor executor_{10};
 };
 
 class RpcPipelineFactory : public wangle::PipelineFactory<SerializePipeline> {
