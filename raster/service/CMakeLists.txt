@@ -13,5 +13,15 @@ add_executable(raster_server
 )
 target_link_libraries(raster_server)
 
-install(FILES ${raster_client} DESTINATION bin)
-install(FILES ${raster_server} DESTINATION bin)
+install(TARGETS raster_client
+    DESTINATION bin
+    PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE
+                GROUP_READ GROUP_EXECUTE
+                WORLD_READ WORLD_EXECUTE
+)
+install(TARGETS raster_server
+    DESTINATION bin
+    PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE
+                GROUP_READ GROUP_EXECUTE
+                WORLD_READ WORLD_EXECUTE
+)
