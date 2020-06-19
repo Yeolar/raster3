@@ -12,3 +12,6 @@ add_executable(raster_server
     RpcServer.cpp
 )
 target_link_libraries(raster_server)
+
+install(FILES ${raster_client} DESTINATION bin)
+install(FILES ${raster_server} DESTINATION bin)

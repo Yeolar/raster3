@@ -63,10 +63,12 @@ configure_file(
     ${PROJECT_SOURCE_DIR}/raster/raster-config.h
 )
 
-# Binary
+# Work on all sub directories
 add_subdirectory(raster)
-add_subdirectory(raster/service)
 add_subdirectory(raster/taskflow)
+
+# Binary
+add_subdirectory(raster/service)
 
 # Test
 if(GTEST_FOUND)
