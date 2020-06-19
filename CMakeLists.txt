@@ -65,6 +65,7 @@ configure_file(
 
 # Binary
 add_subdirectory(raster)
+add_subdirectory(raster/service)
 
 # Test
 if(GTEST_FOUND)

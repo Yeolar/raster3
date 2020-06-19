@@ -18,7 +18,7 @@
 
 #include <wangle/channel/Handler.h>
 
-#include "Message.pb.h"
+#include "raster/Message.pb.h"
 
 namespace raster {
 

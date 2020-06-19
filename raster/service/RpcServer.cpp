@@ -27,9 +27,9 @@
 #include <wangle/service/ServerDispatcher.h>
 #include <wangle/service/Service.h>
 
-#include "GraphScheduler.h"
+#include "raster/GraphScheduler.h"
+#include "raster/taskflow/executor.hpp"
 #include "ServerSerializeHandler.h"
-#include "taskflow/executor.hpp"
 
 DEFINE_int32(port, 8080, "server port");
 

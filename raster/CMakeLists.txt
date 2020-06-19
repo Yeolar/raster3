@@ -11,16 +11,6 @@ foreach(proto ${RASTER_PROTOS})
                ${PROJECT_SOURCE_DIR}/raster/${proto})
 endforeach()
 
-add_executable(raster_client
-    Message.pb.cc
-    RpcClient.cpp
-)
-target_link_libraries(raster_client)
+file(GLOB RASTER_HDRS *.h)
 
-add_executable(raster_server
-    Message.pb.cc
-    RpcServer.cpp
-    sampleapp/GraphScheduler.cpp
-)
-target_link_libraries(raster_server)
-
+install(FILES ${RASTER_HDRS} DESTINATION include/raster)

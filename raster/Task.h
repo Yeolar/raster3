@@ -16,7 +16,7 @@
 
 #pragma once
 
-#include "Message.pb.h"
+#include "raster/Message.pb.h"
 
 namespace raster {
 

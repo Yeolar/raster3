@@ -16,8 +16,8 @@
 
 #pragma once
 
-#include "Message.pb.h"
-#include "taskflow/taskflow.hpp"
+#include "raster/Message.pb.h"
+#include "raster/taskflow/taskflow.hpp"
 
 namespace raster {
 
