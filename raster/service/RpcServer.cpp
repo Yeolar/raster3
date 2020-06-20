@@ -82,7 +82,7 @@ class RpcService : public wangle::Service<Query, Result> {
     }
     handle_ = dlopen(dyn.asString().c_str(), RTLD_LAZY);
     if (handle_ == nullptr) {
-      ACCLOG(ERROR) << "dlopen '" << dyn << "' failed";
+      ACCLOG(ERROR) << "dlopen '" << dyn << "' failed: " << dlerror();
       return false;
     }
     return true;
