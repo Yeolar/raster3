@@ -24,4 +24,12 @@ install(TARGETS raster_server
                 GROUP_READ GROUP_EXECUTE
                 WORLD_READ WORLD_EXECUTE
 )
+install(FILES
+    scripts/client.sh
+    scripts/server.sh
+    DESTINATION bin
+    PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE
+                GROUP_READ GROUP_EXECUTE
+                WORLD_READ WORLD_EXECUTE
+)
 install(DIRECTORY conf DESTINATION .)
