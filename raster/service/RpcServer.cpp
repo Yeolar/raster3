@@ -48,16 +48,29 @@ using SerializePipeline = wangle::Pipeline<folly::IOBufQueue&, Result>;
 class RpcService : public wangle::Service<Query, Result> {
  public:
   RpcService() {
-    std::string conf;
-    acc::readFile(FLAGS_conf.c_str(), conf);
-    conf_ = acc::parseCson(conf);
-    initDynamic();
+    ACCCHECK(initConf());
+    ACCCHECK(initDynamic());
   }
 
   virtual ~RpcService() {
     if (handle_) {
       dlclose(handle_);
     }
+  }
+
+  bool initConf() {
+    std::string conf;
+    if (!acc::readFile(FLAGS_conf.c_str(), conf)) {
+      ACCLOG(ERROR) << "read conf '" << FLAGS_conf << "' failed";
+      return false;
+    }
+    try {
+      conf_ = acc::parseCson(conf);
+    } catch (std::exception& e) {
+      ACCLOG(ERROR) << "parse conf '" << FLAGS_conf << "' failed";
+      return false;
+    }
+    return true;
   }
 
   bool initDynamic() {
