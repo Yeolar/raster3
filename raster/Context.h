@@ -18,9 +18,13 @@
 
 #include <accelerator/dynamic.h>
 
+#include "raster/Message.pb.h"
+
 namespace raster {
 
 struct Context {
+  const Query* request;
+  Result* response;
   const acc::dynamic* conf;
 };
 

@@ -16,21 +16,19 @@
 
 #pragma once
 
-#include "raster/Message.pb.h"
+#include "raster/Context.h"
 
 namespace raster {
 
 class Task {
  public:
-  Task(const Query& request, Result& response)
-      : request_(request), response_(response) {}
+  Task(const Context& context) : context_(context) {}
   virtual ~Task() {}
 
   virtual void operator()() = 0;
 
  protected:
-  const Query& request_;
-  Result& response_;
+  Context context_;
 };
 
 } // namespace raster

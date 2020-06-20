@@ -22,8 +22,7 @@ namespace raster {
 
 class ComputeTask : public Task {
  public:
-  ComputeTask(const Query& request, Result& response)
-      : Task(request, response) {}
+  ComputeTask(const Context& context) : Task(context) {}
 
   void operator()() override {
     printf("Compute\n");

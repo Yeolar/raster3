@@ -8,7 +8,6 @@ target_link_libraries(raster_client)
 
 add_executable(raster_server
     ../Message.pb.cc
-    ../sampleapp/GraphScheduler.cpp
     RpcServer.cpp
 )
 target_link_libraries(raster_server)
@@ -25,4 +24,4 @@ install(TARGETS raster_server
                 GROUP_READ GROUP_EXECUTE
                 WORLD_READ WORLD_EXECUTE
 )
-install(DIRECTORY conf DESTINATION conf)
+install(DIRECTORY conf DESTINATION .)

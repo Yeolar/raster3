@@ -34,7 +34,7 @@
 #include <accelerator/Logging.h>
 
 #include "raster/Context.h"
-#include "raster/GraphScheduler.h"
+#include "raster/Scheduler.h"
 #include "raster/taskflow/executor.hpp"
 #include "ServerSerializeHandler.h"
 
@@ -52,7 +52,6 @@ class RpcService : public wangle::Service<Query, Result> {
     acc::readFile(FLAGS_conf.c_str(), conf);
     conf_ = acc::parseCson(conf);
     initDynamic();
-    initTaskflow();
   }
 
   virtual ~RpcService() {
@@ -75,10 +74,6 @@ class RpcService : public wangle::Service<Query, Result> {
     return true;
   }
 
-  bool initTaskflow() {
-    return true;
-  }
-
   folly::Future<Result> operator()(Query request) override {
     Result response;
     response.set_traceid(request.traceid());
@@ -90,12 +85,18 @@ class RpcService : public wangle::Service<Query, Result> {
       response.set_code(ResultCode::E_SCHED__NOTFOUND);
       return response;
     }
-
+    auto schedule = ScheduleManager::getInstance()->get(sched.asString());
+    if (!schedule) {
+      ACCLOG(ERROR) << "scheduler not registered: " << sched;
+      response.set_code(ResultCode::E_SCHED__NOTFOUND);
+      return response;
+    }
     tf::Taskflow taskflow("raster-taskflow");
     Context context;
+    context.request = &request;
+    context.response = &response;
     context.conf = &conf_;
-    auto& schedule = ScheduleManager::getInstance()->get(sched.asString());
-    schedule(taskflow, request, response, context);
+    (*schedule)(taskflow, context);
     executor_.run(taskflow).wait();
 
     return response;
@@ -105,7 +106,6 @@ class RpcService : public wangle::Service<Query, Result> {
   acc::dynamic conf_;
   tf::Executor executor_{10};
   void* handle_;
-  std::map<std::string, tf::Taskflow> flows_;
 };
 
 class RpcPipelineFactory : public wangle::PipelineFactory<SerializePipeline> {

@@ -22,11 +22,10 @@ namespace raster {
 
 class ResultTask : public Task {
  public:
-  ResultTask(const Query& request, Result& response)
-      : Task(request, response) {}
+  ResultTask(const Context& context) : Task(context) {}
 
   void operator()() override {
-    response_.add_result("result string");
+    context_.response->add_result("result string");
   }
 };
 

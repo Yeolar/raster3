@@ -67,6 +67,7 @@ configure_file(
 
 # Work on all sub directories
 add_subdirectory(raster)
+add_subdirectory(raster/sampleapp)
 add_subdirectory(raster/taskflow)
 
 # Binary

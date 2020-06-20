@@ -1,4 +1,4 @@
 {
-  dllib=lib/raster_sampleapp.dynlib,
-  schedulder=raster
+  dllib=lib/libraster_sampleapp.dylib,
+  scheduler=SampleScheduler
 }
