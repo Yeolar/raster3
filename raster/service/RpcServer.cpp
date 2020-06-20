@@ -50,6 +50,7 @@ class RpcService : public wangle::Service<Query, Result> {
   RpcService() {
     ACCCHECK(initConf());
     ACCCHECK(initDynamic());
+    ACCCHECK(initExecutor());
   }
 
   virtual ~RpcService() {
@@ -87,6 +88,21 @@ class RpcService : public wangle::Service<Query, Result> {
     return true;
   }
 
+  bool initExecutor() {
+    auto threadNum = conf_.getDefault("threadnum");
+    if (threadNum.empty()) {
+      executor_.reset(new tf::Executor());
+    } else {
+      int n = threadNum.asInt();
+      if (n < 1) {
+        ACCLOG(ERROR) << "threadnum: " << n << "<1";
+        return false;
+      }
+      executor_.reset(new tf::Executor(n));
+    }
+    return true;
+  }
+
   folly::Future<Result> operator()(Query request) override {
     Result response;
     response.set_traceid(request.traceid());
@@ -110,15 +126,15 @@ class RpcService : public wangle::Service<Query, Result> {
     context.response = &response;
     context.conf = &conf_;
     (*schedule)(taskflow, context);
-    executor_.run(taskflow).wait();
+    executor_->run(taskflow).wait();
 
     return response;
   }
 
  private:
   acc::dynamic conf_;
-  tf::Executor executor_{10};
   void* handle_;
+  std::unique_ptr<tf::Executor> executor_;
 };
 
 class RpcPipelineFactory : public wangle::PipelineFactory<SerializePipeline> {

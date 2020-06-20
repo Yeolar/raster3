@@ -1,4 +1,5 @@
 {
   dllib=lib/libraster_sampleapp.dylib,
-  scheduler=SampleScheduler
+  scheduler=SampleScheduler,
+  threadnum=10
 }
