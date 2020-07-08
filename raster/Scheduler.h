@@ -30,43 +30,43 @@ class Scheduler {
   virtual void operator()(tf::Taskflow&, const Context&) const = 0;
 };
 
-class ScheduleManager {
+class SchedulerRegistry {
  public:
-  static ScheduleManager* getInstance();
+  static SchedulerRegistry* getInstance();
 
   const Scheduler* get(const std::string& name) const;
   void add(const std::string& name, Scheduler* sched);
 
  private:
-  ScheduleManager() = default;
-  ~ScheduleManager() = default;
+  SchedulerRegistry() = default;
+  ~SchedulerRegistry() = default;
 
   std::map<std::string, std::unique_ptr<Scheduler>> map_;
 };
 
-struct ScheduleRegister {
-  ScheduleRegister(const char* name, Scheduler* sched) {
-    ScheduleManager::getInstance()->add(name, sched);
+struct SchedulerRegistryReceiver {
+  SchedulerRegistryReceiver(const char* name, Scheduler* sched) {
+    SchedulerRegistry::getInstance()->add(name, sched);
   }
 };
 
 #define RASTER_REG_SCHED(cls)                     \
-  static struct raster::ScheduleRegister          \
+  static struct raster::SchedulerRegistryReceiver \
     ACC_ANONYMOUS_VARIABLE(cls)(#cls, new cls())
 
 //////////////////////////////////////////////////////////////////////
 
-inline ScheduleManager* ScheduleManager::getInstance() {
-  static ScheduleManager* sm = new ScheduleManager();
+inline SchedulerRegistry* SchedulerRegistry::getInstance() {
+  static SchedulerRegistry* sm = new SchedulerRegistry();
   return sm;
 }
 
-inline const Scheduler* ScheduleManager::get(const std::string& name) const {
+inline const Scheduler* SchedulerRegistry::get(const std::string& name) const {
   auto it = map_.find(name);
   return it != map_.end() ? it->second.get() : nullptr;
 }
 
-inline void ScheduleManager::add(const std::string& name, Scheduler* sched) {
+inline void SchedulerRegistry::add(const std::string& name, Scheduler* sched) {
   map_.emplace(name, std::unique_ptr<Scheduler>(sched));
 }
 
