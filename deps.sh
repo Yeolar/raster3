@@ -1,7 +1,8 @@
-# git@branch or git@commit
+# git@branch or git@commit or tarball@root
 DEPS=(
-https://github.com/facebook/folly@v2018.08.06.00
+https://github.com/yeolar/folly@v2018.08.06.00.fix
 https://github.com/Yeolar/wangle@v2018.08.06.00.fix:"cmake ../wangle"
+https://github.com/Yeolar/proxygen@v2018.08.06.00.fix:"cd proxygen && ./build.sh"
 https://github.com/Yeolar/accelerator@v2
 )
 
