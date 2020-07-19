@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Yeolar
+ * Copyright 2019 Yeolar
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,19 +16,27 @@
 
 #pragma once
 
-#include "raster/Context.h"
+#include <wangle/channel/Handler.h>
+
+#include "raster/rpcservice/Message.pb.h"
 
 namespace raster {
 
-class Task {
+class ClientSerializeHandler : public wangle::Handler<
+  std::unique_ptr<folly::IOBuf>, Result,
+  Query, std::unique_ptr<folly::IOBuf>> {
  public:
-  Task(const Context& context) : context_(context) {}
-  virtual ~Task() {}
+  void read(Context* ctx, std::unique_ptr<folly::IOBuf> msg) override {
+    Result received;
+    received.ParseFromArray(msg->data(), msg->length());
+    ctx->fireRead(received);
+  }
 
-  virtual void operator()() = 0;
-
- protected:
-  Context context_;
+  folly::Future<folly::Unit> write(Context* ctx, Query b) override {
+    std::string out;
+    b.SerializePartialToString(&out);
+    return ctx->fireWrite(folly::IOBuf::copyBuffer(out));
+  }
 };
 
 } // namespace raster

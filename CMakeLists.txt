@@ -67,11 +67,10 @@ configure_file(
 
 # Work on all sub directories
 add_subdirectory(raster)
-add_subdirectory(raster/sampleapp)
 add_subdirectory(raster/taskflow)
 
 # Binary
-add_subdirectory(raster/service)
+add_subdirectory(raster/rpcservice)
 
 # Test
 if(GTEST_FOUND)

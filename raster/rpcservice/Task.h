@@ -16,17 +16,19 @@
 
 #pragma once
 
-#include "raster/Task.h"
+#include "raster/rpcservice/Context.h"
 
 namespace raster {
 
-class ResultTask : public Task {
+class Task {
  public:
-  ResultTask(const Context& context) : Task(context) {}
+  Task(const Context& context) : context_(context) {}
+  virtual ~Task() {}
 
-  void operator()() override {
-    context_.response->add_result("result string");
-  }
+  virtual void operator()() = 0;
+
+ protected:
+  Context context_;
 };
 
 } // namespace raster

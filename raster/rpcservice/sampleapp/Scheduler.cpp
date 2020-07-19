@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-#include "raster/Scheduler.h"
+#include "raster/rpcservice/Scheduler.h"
 #include "ComputeTask.h"
 #include "QueryTask.h"
 #include "ResultTask.h"

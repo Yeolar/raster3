@@ -33,8 +33,8 @@
 #include <accelerator/FileUtil.h>
 #include <accelerator/Logging.h>
 
-#include "raster/Context.h"
-#include "raster/Scheduler.h"
+#include "raster/rpcservice/Context.h"
+#include "raster/rpcservice/Scheduler.h"
 #include "raster/taskflow/executor.hpp"
 #include "ServerSerializeHandler.h"
 

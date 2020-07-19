@@ -16,16 +16,17 @@
 
 #pragma once
 
-#include <accelerator/dynamic.h>
-
-#include "raster/Message.pb.h"
+#include "raster/rpcservice/Task.h"
 
 namespace raster {
 
-struct Context {
-  const Query* request;
-  Result* response;
-  const acc::dynamic* conf;
+class ResultTask : public Task {
+ public:
+  ResultTask(const Context& context) : Task(context) {}
+
+  void operator()() override {
+    context_.response->add_result("result string");
+  }
 };
 
 } // namespace raster

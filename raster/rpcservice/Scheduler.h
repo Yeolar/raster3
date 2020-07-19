@@ -18,8 +18,8 @@
 
 #include <accelerator/Macro.h>
 
-#include "raster/Context.h"
-#include "raster/Message.pb.h"
+#include "raster/rpcservice/Context.h"
+#include "raster/rpcservice/Message.pb.h"
 #include "raster/taskflow/taskflow.hpp"
 
 namespace raster {

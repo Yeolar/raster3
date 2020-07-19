@@ -16,16 +16,18 @@
 
 #pragma once
 
-#include "raster/Task.h"
+#include "raster/rpcservice/Task.h"
 
 namespace raster {
 
-class ComputeTask : public Task {
+class QueryTask : public Task {
  public:
-  ComputeTask(const Context& context) : Task(context) {}
+  QueryTask(const Context& context) : Task(context) {}
 
   void operator()() override {
-    printf("Compute\n");
+    printf("Query: %s, %s\n",
+           context_.request->traceid().c_str(),
+           context_.request->query().c_str());
   }
 };
 
