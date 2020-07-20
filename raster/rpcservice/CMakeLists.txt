@@ -11,25 +11,25 @@ foreach(proto ${RASTER_PROTOS})
                ${PROJECT_SOURCE_DIR}/raster/rpcservice/${proto})
 endforeach()
 
-add_executable(raster_client
+add_executable(raster_rpcclient
     Message.pb.cc
     RpcClient.cpp
 )
-target_link_libraries(raster_client)
+target_link_libraries(raster_rpcclient)
 
-add_executable(raster_server
+add_executable(raster_rpcserver
     Message.pb.cc
     RpcServer.cpp
 )
-target_link_libraries(raster_server)
+target_link_libraries(raster_rpcserver)
 
-install(TARGETS raster_client
+install(TARGETS raster_rpcclient
     DESTINATION bin
     PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE
                 GROUP_READ GROUP_EXECUTE
                 WORLD_READ WORLD_EXECUTE
 )
-install(TARGETS raster_server
+install(TARGETS raster_rpcserver
     DESTINATION bin
     PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE
                 GROUP_READ GROUP_EXECUTE

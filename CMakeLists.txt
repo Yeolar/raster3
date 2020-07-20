@@ -67,7 +67,6 @@ configure_file(
 
 # Work on all sub directories
 add_subdirectory(raster)
-add_subdirectory(raster/taskflow)
 
 # Binary
 add_subdirectory(raster/rpcservice)

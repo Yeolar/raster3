@@ -36,6 +36,6 @@
 
 /_build/
 /_deps/
-/raster3/raster-config.h
+/raster/raster-config.h
 Message.pb.h
 Message.pb.cc
