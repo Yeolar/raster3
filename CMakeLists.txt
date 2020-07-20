@@ -29,6 +29,7 @@ find_package(GFlags REQUIRED)
 find_package(Glog REQUIRED)
 find_package(Folly REQUIRED)
 find_package(Wangle REQUIRED)
+find_package(Proxygen REQUIRED)
 find_package(Protobuf REQUIRED)
 find_package(Accelerator REQUIRED)
 
@@ -51,6 +52,7 @@ link_libraries(
     ${GFLAGS_LIBRARIES}
     ${GLOG_LIBRARIES}
     ${FOLLY_LIBRARIES}
+    ${PROXYGEN_LIBRARIES}
     ${WANGLE_LIBRARIES}
     ${PROTOBUF_LIBRARIES}
     ${ACCELERATOR_LIBRARY}
@@ -69,7 +71,8 @@ configure_file(
 add_subdirectory(raster)
 
 # Binary
-add_subdirectory(raster/rpcservice)
+add_subdirectory(raster/httpservice)
+#add_subdirectory(raster/rpcservice)
 
 # Test
 if(GTEST_FOUND)

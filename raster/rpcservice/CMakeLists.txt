@@ -36,8 +36,8 @@ install(TARGETS raster_rpcserver
                 WORLD_READ WORLD_EXECUTE
 )
 install(FILES
-    scripts/client.sh
-    scripts/server.sh
+    scripts/rpcclient.sh
+    scripts/rpcserver.sh
     DESTINATION bin
     PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE
                 GROUP_READ GROUP_EXECUTE
