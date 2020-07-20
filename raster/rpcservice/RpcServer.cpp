@@ -33,9 +33,6 @@
 #include <accelerator/FileUtil.h>
 #include <accelerator/Logging.h>
 
-#include "raster/rpcservice/Context.h"
-#include "raster/rpcservice/Scheduler.h"
-#include "raster/taskflow/executor.hpp"
 #include "ServerSerializeHandler.h"
 
 DEFINE_int32(port, 8080, "server port");
@@ -49,15 +46,9 @@ class RpcService : public wangle::Service<Query, Result> {
  public:
   RpcService() {
     ACCCHECK(initConf());
-    ACCCHECK(initDynamic());
-    ACCCHECK(initExecutor());
   }
 
-  virtual ~RpcService() {
-    if (handle_) {
-      dlclose(handle_);
-    }
-  }
+  virtual ~RpcService() {}
 
   bool initConf() {
     std::string conf;
@@ -74,67 +65,20 @@ class RpcService : public wangle::Service<Query, Result> {
     return true;
   }
 
-  bool initDynamic() {
-    auto dyn = conf_.getDefault("dllib");
-    if (dyn.empty()) {
-      ACCLOG(ERROR) << "conf miss dllib: " << acc::toCson(conf_);
-      return false;
-    }
-    handle_ = dlopen(dyn.asString().c_str(), RTLD_LAZY);
-    if (handle_ == nullptr) {
-      ACCLOG(ERROR) << "dlopen '" << dyn << "' failed: " << dlerror();
-      return false;
-    }
-    return true;
-  }
-
-  bool initExecutor() {
-    auto threadNum = conf_.getDefault("threadnum");
-    if (threadNum.empty()) {
-      executor_.reset(new tf::Executor());
-    } else {
-      int n = threadNum.asInt();
-      if (n < 1) {
-        ACCLOG(ERROR) << "threadnum: " << n << "<1";
-        return false;
-      }
-      executor_.reset(new tf::Executor(n));
-    }
-    return true;
-  }
-
   folly::Future<Result> operator()(Query request) override {
+    printf("Query: %s, %s\n",
+           request.traceid().c_str(),
+           request.query().c_str());
+
     Result response;
     response.set_traceid(request.traceid());
     response.set_code(ResultCode::OK);
-
-    auto sched = conf_.getDefault("scheduler");
-    if (sched.empty()) {
-      ACCLOG(ERROR) << "conf miss scheduler: " << acc::toCson(conf_);
-      response.set_code(ResultCode::E_SCHED__NOTFOUND);
-      return response;
-    }
-    auto schedule = ScheduleManager::getInstance()->get(sched.asString());
-    if (!schedule) {
-      ACCLOG(ERROR) << "scheduler not registered: " << sched;
-      response.set_code(ResultCode::E_SCHED__NOTFOUND);
-      return response;
-    }
-    tf::Taskflow taskflow("raster-taskflow");
-    Context context;
-    context.request = &request;
-    context.response = &response;
-    context.conf = &conf_;
-    (*schedule)(taskflow, context);
-    executor_->run(taskflow).wait();
-
+    response.add_result("result string");
     return response;
   }
 
  private:
   acc::dynamic conf_;
-  void* handle_;
-  std::unique_ptr<tf::Executor> executor_;
 };
 
 class RpcPipelineFactory : public wangle::PipelineFactory<SerializePipeline> {
