@@ -72,7 +72,7 @@ add_subdirectory(raster)
 
 # Binary
 add_subdirectory(raster/httpservice)
-#add_subdirectory(raster/rpcservice)
+add_subdirectory(raster/rpcservice)
 
 # Test
 if(GTEST_FOUND)
