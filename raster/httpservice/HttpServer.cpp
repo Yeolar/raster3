@@ -20,6 +20,10 @@
 #include <proxygen/httpserver/HTTPServer.h>
 #include <proxygen/httpserver/RequestHandlerFactory.h>
 
+#include <accelerator/FileUtil.h>
+#include <accelerator/Logging.h>
+#include <crystal/table/TableFactory.h>
+
 #include "HttpHandler.h"
 #include "HttpStats.h"
 
@@ -32,11 +36,13 @@ DEFINE_int32(http_port, 11000, "Port to listen on with HTTP protocol");
 DEFINE_int32(spdy_port, 11001, "Port to listen on with SPDY protocol");
 DEFINE_int32(h2_port, 11002, "Port to listen on with HTTP/2 protocol");
 DEFINE_string(ip, "localhost", "IP/Hostname to bind to");
-DEFINE_int32(threads, 0, "Number of threads to listen on. Numbers <= 0 "
-             "will use the number of cores on this machine.");
+DEFINE_string(conf, "conf/raster.cson", "server conf");
 
 class HttpHandlerFactory : public proxygen::RequestHandlerFactory {
  public:
+  HttpHandlerFactory(crystal::TableFactory* factory)
+      : factory_(factory) {}
+
   void onServerStart(folly::EventBase* /*evb*/) noexcept override {
     stats_.reset(new HttpStats);
   }
@@ -48,10 +54,11 @@ class HttpHandlerFactory : public proxygen::RequestHandlerFactory {
   proxygen::RequestHandler* onRequest(proxygen::RequestHandler*,
                                       proxygen::HTTPMessage*)
       noexcept override {
-    return new HttpHandler(stats_.get());
+    return new HttpHandler(factory_, stats_.get());
   }
 
  private:
+  crystal::TableFactory* factory_;
   folly::ThreadLocalPtr<HttpStats> stats_;
 };
 
@@ -60,24 +67,47 @@ int main(int argc, char* argv[]) {
   google::InitGoogleLogging(argv[0]);
   google::InstallFailureSignalHandler();
 
+  std::string confStr;
+  if (!acc::readFile(FLAGS_conf.c_str(), confStr)) {
+    ACCLOG(ERROR) << "read conf '" << FLAGS_conf << "' failed";
+    return -1;
+  }
+  acc::dynamic conf;
+  try {
+    conf = acc::parseCson(confStr);
+  } catch (std::exception& e) {
+    ACCLOG(ERROR) << "parse conf '" << FLAGS_conf << "' failed";
+    return -1;
+  }
+  auto threads = conf.getDefault("threads", 0).asInt();
+  auto crystal_conf = conf.getDefault("crystal_conf");
+  auto crystal_data = conf.getDefault("crystal_data");
+
+  crystal::TableFactory factory;
+  if (!factory.load(crystal_conf.c_str(), crystal_data.c_str(), true)) {
+    ACCLOG(ERROR) << "load data from '" << crystal_data
+        << "' with conf '" << crystal_conf << "' failed";
+    return -1;
+  }
+
   std::vector<proxygen::HTTPServer::IPConfig> IPs = {
     {SocketAddress(FLAGS_ip, FLAGS_http_port, true), Protocol::HTTP},
     {SocketAddress(FLAGS_ip, FLAGS_spdy_port, true), Protocol::SPDY},
     {SocketAddress(FLAGS_ip, FLAGS_h2_port, true), Protocol::HTTP2},
   };
 
-  if (FLAGS_threads <= 0) {
-    FLAGS_threads = sysconf(_SC_NPROCESSORS_ONLN);
-    CHECK(FLAGS_threads > 0);
+  if (threads <= 0) {
+    threads = sysconf(_SC_NPROCESSORS_ONLN);
+    CHECK(threads > 0);
   }
 
   proxygen::HTTPServerOptions options;
-  options.threads = static_cast<size_t>(FLAGS_threads);
+  options.threads = static_cast<size_t>(threads);
   options.idleTimeout = std::chrono::milliseconds(60000);
   options.shutdownOn = {SIGINT, SIGTERM};
   options.enableContentCompression = false;
   options.handlerFactories = proxygen::RequestHandlerChain()
-      .addThen<HttpHandlerFactory>()
+      .addThen<HttpHandlerFactory>(&factory)
       .build();
   options.h2cEnabled = true;
 

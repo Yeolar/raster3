@@ -19,14 +19,20 @@
 #include <folly/Memory.h>
 #include <proxygen/httpserver/RequestHandler.h>
 
+namespace crystal {
+
+class TableFactory;
+
+} // namespace crystal
+
 namespace raster {
 
 class HttpStats;
 
 class HttpHandler : public proxygen::RequestHandler {
  public:
-  explicit HttpHandler(HttpStats* stats)
-      : stats_(stats) {}
+  HttpHandler(crystal::TableFactory* factory, HttpStats* stats);
+  virtual ~HttpHandler() {}
 
   void onRequest(std::unique_ptr<proxygen::HTTPMessage> headers)
       noexcept override;
@@ -42,7 +48,8 @@ class HttpHandler : public proxygen::RequestHandler {
   void onError(proxygen::ProxygenError err) noexcept override;
 
  private:
-  HttpStats* const stats_{nullptr};
+  crystal::TableFactory* factory_;
+  HttpStats* const stats_;
   std::unique_ptr<folly::IOBuf> body_;
 };
 

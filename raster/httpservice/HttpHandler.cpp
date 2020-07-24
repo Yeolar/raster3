@@ -19,9 +19,16 @@
 #include <proxygen/httpserver/RequestHandler.h>
 #include <proxygen/httpserver/ResponseBuilder.h>
 
+#include <crystal/query/Query.h>
+#include <crystal/table/TableFactory.h>
+
 #include "HttpStats.h"
 
 namespace raster {
+
+HttpHandler::HttpHandler(crystal::TableFactory* factory, HttpStats* stats)
+    : factory_(factory), stats_(stats) {
+}
 
 void HttpHandler::onRequest(std::unique_ptr<proxygen::HTTPMessage> /*headers*/)
     noexcept {
@@ -37,11 +44,12 @@ void HttpHandler::onBody(std::unique_ptr<folly::IOBuf> body) noexcept {
 }
 
 void HttpHandler::onEOM() noexcept {
+  crystal::Query query(factory_, true);
+  query += body_->coalesce().str();
   proxygen::ResponseBuilder(downstream_)
     .status(200, "OK")
-    .header("Request-Number",
-            folly::to<std::string>(stats_->getRequestCount()))
-    .body(std::move(body_))
+    .header("Request-Number", folly::to<std::string>(stats_->getRequestCount()))
+    .body(folly::IOBuf::copyBuffer(query.runAndToJson(true, true)))
     .sendWithEOM();
 }
 

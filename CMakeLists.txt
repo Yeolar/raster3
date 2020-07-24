@@ -32,6 +32,7 @@ find_package(Wangle REQUIRED)
 find_package(Proxygen REQUIRED)
 find_package(Protobuf REQUIRED)
 find_package(Accelerator REQUIRED)
+find_package(Crystal REQUIRED)
 
 # Optional packages
 find_package(GTest)
@@ -56,6 +57,7 @@ link_libraries(
     ${WANGLE_LIBRARIES}
     ${PROTOBUF_LIBRARIES}
     ${ACCELERATOR_LIBRARY}
+    ${CRYSTAL_LIBRARY}
 )
 
 include_directories(
