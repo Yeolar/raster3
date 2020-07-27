@@ -19,11 +19,8 @@
 #include <folly/Memory.h>
 #include <proxygen/httpserver/RequestHandler.h>
 
-namespace crystal {
-
-class TableFactory;
-
-} // namespace crystal
+#include <crystal/query/Query.h>
+#include <crystal/table/TableFactory.h>
 
 namespace raster {
 
@@ -31,7 +28,9 @@ class HttpStats;
 
 class HttpHandler : public proxygen::RequestHandler {
  public:
-  HttpHandler(crystal::TableFactory* factory, HttpStats* stats);
+  HttpHandler(crystal::TableFactory* factory,
+              crystal::Graph::Executor* executor,
+              HttpStats* stats);
   virtual ~HttpHandler() {}
 
   void onRequest(std::unique_ptr<proxygen::HTTPMessage> headers)
@@ -49,6 +48,7 @@ class HttpHandler : public proxygen::RequestHandler {
 
  private:
   crystal::TableFactory* factory_;
+  crystal::Graph::Executor* executor_;
   HttpStats* const stats_;
   std::unique_ptr<folly::IOBuf> body_;
 };

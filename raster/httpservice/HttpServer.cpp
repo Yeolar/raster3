@@ -40,8 +40,9 @@ DEFINE_string(conf, "conf/raster.cson", "server conf");
 
 class HttpHandlerFactory : public proxygen::RequestHandlerFactory {
  public:
-  HttpHandlerFactory(crystal::TableFactory* factory)
-      : factory_(factory) {}
+  HttpHandlerFactory(crystal::TableFactory* factory,
+                     crystal::Graph::Executor* executor)
+      : factory_(factory), executor_(executor) {}
 
   void onServerStart(folly::EventBase* /*evb*/) noexcept override {
     stats_.reset(new HttpStats);
@@ -54,11 +55,12 @@ class HttpHandlerFactory : public proxygen::RequestHandlerFactory {
   proxygen::RequestHandler* onRequest(proxygen::RequestHandler*,
                                       proxygen::HTTPMessage*)
       noexcept override {
-    return new HttpHandler(factory_, stats_.get());
+    return new HttpHandler(factory_, executor_, stats_.get());
   }
 
  private:
   crystal::TableFactory* factory_;
+  crystal::Graph::Executor* executor_;
   folly::ThreadLocalPtr<HttpStats> stats_;
 };
 
@@ -89,6 +91,7 @@ int main(int argc, char* argv[]) {
         << "' with conf '" << crystal_conf << "' failed";
     return -1;
   }
+  crystal::Graph::Executor executor;
 
   std::vector<proxygen::HTTPServer::IPConfig> IPs = {
     {SocketAddress(FLAGS_ip, FLAGS_http_port, true), Protocol::HTTP},
@@ -107,7 +110,7 @@ int main(int argc, char* argv[]) {
   options.shutdownOn = {SIGINT, SIGTERM};
   options.enableContentCompression = false;
   options.handlerFactories = proxygen::RequestHandlerChain()
-      .addThen<HttpHandlerFactory>(&factory)
+      .addThen<HttpHandlerFactory>(&factory, &executor)
       .build();
   options.h2cEnabled = true;
 
